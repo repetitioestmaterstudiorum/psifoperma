@@ -18,6 +18,7 @@ The final phase of the project was a bit rushed, due to time constraints. Lots o
 
 The following is a list of nice to haves, in case this project would be developed further.
 
+-   [ ] Input validation
 -   [ ] Client-side address generation
 -   [ ] Client-side voting using Metamask
 -   [ ] Eliminate the voter role, it's not really needed, or create a mechanism for voters to become users (so they can create votes themselves)

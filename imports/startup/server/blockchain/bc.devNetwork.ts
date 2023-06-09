@@ -1,5 +1,6 @@
 import { decrypt } from '/imports/startup/server/encryption/encryption';
 import { C } from '/imports/startup/server/server.constants';
+import { _defaultSettings } from '/imports/startup/server/settings/default-settings';
 import { getMemoizedSetting } from '/imports/startup/server/settings/settings.model';
 import { getErrMsg } from '/imports/utils/error-utils';
 import { log } from '/imports/utils/logger';
@@ -26,7 +27,9 @@ async function deployContract() {
 	try {
 		const abi = await getMemoizedSetting('blockchain.abi', 30);
 		const bytecode = await getMemoizedSetting('blockchain.bytecode', 30);
-		const systemPkEncrypted = await getMemoizedSetting('blockchain.systemPk', 30);
+
+		// Directly from _defaultSettings because when we use the local chain, we don't want the value from the db
+		const systemPkEncrypted = _defaultSettings.blockchain.systemPk;
 		const systemPk = decrypt(systemPkEncrypted);
 
 		// eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -3,8 +3,8 @@
   "author": "repetitioestmaterstudiorum",
   "license": "MIT",
   "scripts": {
-    "dev": "export $(grep -v '^#' .env | xargs) && meteor --exclude-archs web.browser.legacy",
-    "dev:trace": "export $(grep -v '^#' .env | xargs) && NODE_OPTIONS=--trace-warnings meteor --exclude-archs web.browser.legacy",
+    "dev": "export $(grep -v '^#' .env | xargs) && SERVER_NODE_OPTIONS=--no-wasm-code-gc meteor --exclude-archs web.browser.legacy",
+    "dev:trace": "export $(grep -v '^#' .env | xargs) && NODE_OPTIONS=--trace-warnings SERVER_NODE_OPTIONS=--no-wasm-code-gc meteor --exclude-archs web.browser.legacy",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "lint": "eslint 'imports/**/*.{ts,tsx}'",
     "tsc": "tsc -p $(pwd)/tsconfig.json",

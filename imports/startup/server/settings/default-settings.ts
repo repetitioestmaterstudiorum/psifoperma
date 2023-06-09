@@ -14,7 +14,7 @@ const defaultSettings = {
 	blockchain: {
 		// Values pertain to the dev. network, enter real settings into the db
 		systemPk:
-			'd2a9e832eb1f64c22d8f32b12d1c4b18:6cc9bacdb0781ed1243a9b48d7a07eb2592b5d30aa0e97a5629a641c4f057ef28fbe2049088aa060a689434a566a1a7a4d3b9f04eb8ba02eff87008f0548dd2bd228e843d22de94d2bffa025cb0a4465',
+			'd6e92a072c25bc0872df2b726bfd4b14:e9f063d2e32d0c67e9fb4740da297211a9a87da989a0c71042ac809f1aa3ba62a0080397e18f2b053af13dd554dcfd294f9027ff18a4b23916afd70918838f60cf5e1c01ea3462782f40f6aabec59597',
 		contractAddress: '0xEcb3EAAe75313CaAA951294f43245885Aab79E89',
 		abi: [
 			{
