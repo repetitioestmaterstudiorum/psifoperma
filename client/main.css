@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	font-family: 'Helvetica Neue', 'Helvetica', 'Arial';
+}
+
+@layer components {
+	.btn {
+		text-transform: none;
+	}
+}
+
+/* Manual overrides */
+.swal2-popup {
+	background-color: rgba(128, 128, 128, 0.5) !important;
+}
+
+.swal2-title,
+.swal2-html-container,
+.swal2-input {
+	color: #e1e1e1 !important;
+}

@@ -1,0 +1,14 @@
+# compiled output (meteor has its own .gitignore file)
+/node_modules
+
+# OS and VSCode
+.DS_Store
+
+# project files
+.env
+
+# private notes
+notes.md
+
+# old files not on github
+archive/
