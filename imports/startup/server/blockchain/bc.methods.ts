@@ -4,11 +4,11 @@ import * as bc from '/imports/startup/server/blockchain/bc.logic';
 // ---
 
 Meteor.methods({
-	'blockchain.createWallet': () => {
+	'blockchain.createWallet': function () {
 		return bc.createWallet();
 	},
 
-	'blockchain.createVoting': async ({
+	'blockchain.createVoting': async function ({
 		voterAddresses,
 		proposalTitles,
 		durationInMinutes,
@@ -16,11 +16,11 @@ Meteor.methods({
 		voterAddresses: string[];
 		proposalTitles: string[];
 		durationInMinutes: number;
-	}) => {
+	}) {
 		return await bc.createVoting(voterAddresses, proposalTitles, durationInMinutes);
 	},
 
-	'blockchain.vote': async ({
+	'blockchain.vote': async function ({
 		instanceId,
 		proposalId,
 		voterAddress,
@@ -28,35 +28,35 @@ Meteor.methods({
 		instanceId: number;
 		proposalId: number;
 		voterAddress: string;
-	}) => {
+	}) {
 		return await bc.vote(instanceId, proposalId, voterAddress);
 	},
 
-	'blockchain.getInstance': async ({ instanceId }: { instanceId: number }) => {
+	'blockchain.getInstance': async function ({ instanceId }: { instanceId: number }) {
 		return await bc.getInstance(instanceId);
 	},
 
-	'blockchain.getInstanceProposal': async ({
+	'blockchain.getInstanceProposal': async function ({
 		instanceId,
 		proposalId,
 	}: {
 		instanceId: number;
 		proposalId: number;
-	}) => {
+	}) {
 		return await bc.getInstanceProposal(instanceId, proposalId);
 	},
 
-	'blockchain.getInstanceVoter': async ({
+	'blockchain.getInstanceVoter': async function ({
 		instanceId,
 		voterAddress,
 	}: {
 		instanceId: number;
 		voterAddress: string;
-	}) => {
+	}) {
 		return await bc.getInstanceVoter(instanceId, voterAddress);
 	},
 
-	'blockchain.getInstancesCount': async () => {
+	'blockchain.getInstancesCount': async function () {
 		return await bc.getInstancesCount();
 	},
 });

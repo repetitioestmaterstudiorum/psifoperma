@@ -12,13 +12,13 @@ import { C } from '/imports/startup/global.constants';
 // ---
 
 Meteor.methods({
-	'users.addUser': async (email: string) => {
+	'users.addUser': async function (email: string) {
 		check(email, String);
 
 		return await addUserByEmailPWL(email, ['user']);
 	},
 
-	'users.addToRole': async (userId: string, role: string) => {
+	'users.addToRole': async function (userId: string, role: string) {
 		check(userId, String);
 		check(role, String);
 		await requireAdmin();
@@ -28,14 +28,14 @@ Meteor.methods({
 		return addUserToRoles(userId, [role]);
 	},
 
-	'users.createWalletForUser': async (userId: string) => {
+	'users.createWalletForUser': async function (userId: string) {
 		check(userId, String);
 		const adminUser = await requireAdmin();
 
 		return await createWalletForUser(userId, adminUser._id);
 	},
 
-	'users.getWalletAndPk': async () => {
+	'users.getWalletAndPk': async function () {
 		const user = await requireUser();
 
 		return await getWalletAndPkForUser(user._id);
