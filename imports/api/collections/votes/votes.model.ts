@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { Meteor } from 'meteor/meteor';
 import { Vote, VoteMeta, VotesCollection } from './votes.collection';
 import { getIsAdmin } from '/imports/api/collections/roles/roles.model';
 import {
@@ -39,29 +39,14 @@ export async function getVoteState({
 	if (C.app.isServer) {
 		const { vote } = await requireVoteReadRights({ voteId, userId });
 
-		if (!vote?.instanceId) {
-			if (C.app.isProd) {
-				const errorMessage = `getVoteState(): no instanceId on vote ${voteId}, can't get stats! (in prod). Should habe been deployed. Retries left: ${retriesLeft}, retrying in 5 seconds ...`;
-				log.error(errorMessage);
-				if (retriesLeft === 0) {
-					throw new Meteor.Error(`Failed to get vote status for vote ${voteId}`);
-				}
-				await new Promise(resolve => setTimeout(resolve, 5000));
-				return getVoteState({ voteId, userId, retriesLeft: retriesLeft - 1 });
+		if (!vote?.instanceId && !(vote?.instanceId === 0)) {
+			const errorMessage = `getVoteState(): no instanceId on vote ${voteId}, can't get stats! (in prod). Should habe been deployed. Retries left: ${retriesLeft}, retrying in 5 seconds ...`;
+			log.error(errorMessage);
+			if (retriesLeft === 0) {
+				throw new Meteor.Error(`Failed to get vote status for vote ${voteId}`);
 			}
-			if (C.app.isDev && !C.app.isProdSimulation) {
-				log.error(
-					`getVoteState(): no instanceId on vote ${voteId}, can't get stats! (in dev). You should re-deploy the vote.`
-				);
-				return {
-					proposals: [
-						{ voteCount: Math.floor(Math.random() * 10), title: 'Example Option 1' },
-						{ voteCount: Math.floor(Math.random() * 10), title: 'Example Option 2' },
-						{ voteCount: Math.floor(Math.random() * 10), title: 'Example Option 3' },
-					],
-					isClosed: false,
-				};
-			}
+			await new Promise(resolve => setTimeout(resolve, 5000));
+			return getVoteState({ voteId, userId, retriesLeft: retriesLeft - 1 });
 		}
 
 		// eslint-disable-next-line
@@ -78,10 +63,7 @@ export async function getVoteState({
 
 		const proposals = await Promise.all(
 			Array.from({ length: proposalCount }, async (_undef, idx) => {
-				const { voteCount, title } = await bc.getInstanceProposal(
-					_.toNumber(vote.instanceId),
-					idx
-				);
+				const { voteCount, title } = await bc.getInstanceProposal(vote.instanceId, idx);
 				return { voteCount, title };
 			})
 		);
@@ -281,7 +263,7 @@ export async function deleteVote(voteId: string, userId: string) {
 	return await removeVote({ _id: voteId }, userId);
 }
 
-async function updateVoteStatus(voteId: string, userId: string, status: string) {
+export async function updateVoteStatus(voteId: string, userId: string, status: string) {
 	if (!Object.values(C.votes.statuses).includes(status)) {
 		const errorMessage = `updateVoteStatus(): invalid status: ${status}`;
 		log.error(errorMessage);

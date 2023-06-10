@@ -170,10 +170,14 @@ export default function BlockchainButtons() {
 	const [votingInfo, setVotingInfo] = useState({
 		voterAddresses: '',
 		proposalTitles: '',
-		durationInMinutes: '',
+		durationInMinutes: 0,
 	});
-	const [voteInfo, setVoteInfo] = useState({ instanceId: '', proposalId: '', voterAddress: '' });
-	const [getInstanceId, setGetInstanceId] = useState('');
+	const [voteInfo, setVoteInfo] = useState({
+		instanceId: 0,
+		proposalId: '',
+		voterAddress: '',
+	});
+	const [instanceId, setInstanceId] = useState(0);
 	const [proposalId, setProposalId] = useState('');
 	const [voterAddress, setVoterAddress] = useState('');
 
@@ -218,7 +222,10 @@ export default function BlockchainButtons() {
 					className="input border-1 border-gray-500 rounded input-sm text-left"
 					value={votingInfo.durationInMinutes}
 					onChange={e =>
-						setVotingInfo({ ...votingInfo, durationInMinutes: e.target.value })
+						setVotingInfo({
+							...votingInfo,
+							durationInMinutes: _.toNumber(e.target.value),
+						})
 					}
 					placeholder="Duration in Minutes"
 				/>
@@ -230,7 +237,7 @@ export default function BlockchainButtons() {
 							const result = await Meteor.callAsync('blockchain.createVoting', {
 								voterAddresses: voterAddresses.split(','),
 								proposalTitles: proposalTitles.split(','),
-								durationInMinutes: parseInt(durationInMinutes),
+								durationInMinutes: _.toNumber(durationInMinutes),
 							});
 							Swal.fire({
 								title: 'Voting created',
@@ -252,7 +259,9 @@ export default function BlockchainButtons() {
 				<input
 					className="input border-1 border-gray-500 rounded input-sm text-left"
 					value={voteInfo.instanceId}
-					onChange={e => setVoteInfo({ ...voteInfo, instanceId: e.target.value })}
+					onChange={e =>
+						setVoteInfo({ ...voteInfo, instanceId: _.toNumber(e.target.value) })
+					}
 					placeholder="Instance ID"
 				/>
 				<input
@@ -272,8 +281,8 @@ export default function BlockchainButtons() {
 						try {
 							const { instanceId, proposalId, voterAddress } = voteInfo;
 							const result = await Meteor.callAsync('blockchain.vote', {
-								instanceId: parseInt(instanceId),
-								proposalId: parseInt(proposalId),
+								instanceId: _.toNumber(instanceId),
+								proposalId: proposalId,
 								voterAddress: voterAddress,
 							});
 							Swal.fire({
@@ -294,15 +303,15 @@ export default function BlockchainButtons() {
 			<div className="flex flex-row space-x-2">
 				<input
 					className="input border-1 border-gray-500 rounded input-sm text-left"
-					value={getInstanceId}
-					onChange={e => setGetInstanceId(e.target.value)}
+					value={instanceId}
+					onChange={e => setInstanceId(_.toNumber(e.target.value))}
 					placeholder="Instance ID"
 				/>
 				<button
 					onClick={async () => {
 						try {
 							const result = await Meteor.callAsync('blockchain.getInstance', {
-								instanceId: parseInt(getInstanceId),
+								instanceId: _.toNumber(instanceId),
 							});
 							Swal.fire({
 								title: 'Instance Info',
@@ -322,8 +331,8 @@ export default function BlockchainButtons() {
 			<div className="flex flex-row space-x-2">
 				<input
 					className="input border-1 border-gray-500 rounded input-sm text-left"
-					value={getInstanceId}
-					onChange={e => setGetInstanceId(e.target.value)}
+					value={instanceId}
+					onChange={e => setInstanceId(_.toNumber(e.target.value))}
 					placeholder="Instance ID"
 				/>
 				<input
@@ -338,8 +347,8 @@ export default function BlockchainButtons() {
 							const result = await Meteor.callAsync(
 								'blockchain.getInstanceProposal',
 								{
-									instanceId: parseInt(getInstanceId),
-									proposalId: parseInt(proposalId),
+									instanceId: _.toNumber(instanceId),
+									proposalId: proposalId,
 								}
 							);
 							Swal.fire({
@@ -360,8 +369,8 @@ export default function BlockchainButtons() {
 			<div className="flex flex-row space-x-2">
 				<input
 					className="input border-1 border-gray-500 rounded input-sm text-left"
-					value={getInstanceId}
-					onChange={e => setGetInstanceId(e.target.value)}
+					value={instanceId}
+					onChange={e => setInstanceId(_.toNumber(e.target.value))}
 					placeholder="Instance ID"
 				/>
 				<input
@@ -374,7 +383,7 @@ export default function BlockchainButtons() {
 					onClick={async () => {
 						try {
 							const result = await Meteor.callAsync('blockchain.getInstanceVoter', {
-								instanceId: parseInt(getInstanceId),
+								instanceId: _.toNumber(instanceId),
 								voterAddress: voterAddress,
 							});
 							Swal.fire({

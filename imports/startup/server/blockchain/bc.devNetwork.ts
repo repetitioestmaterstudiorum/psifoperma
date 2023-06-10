@@ -1,9 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import _ from 'lodash';
 import { decrypt } from '/imports/startup/server/encryption/encryption';
 import { C } from '/imports/startup/server/server.constants';
 import { _defaultSettings } from '/imports/startup/server/settings/default-settings';
 import { getMemoizedSetting } from '/imports/startup/server/settings/settings.model';
 import { getErrMsg } from '/imports/utils/error-utils';
 import { log } from '/imports/utils/logger';
+import { findVotes, updateVoteStatus } from '/imports/api/collections/votes/votes.model';
 
 // ---
 
@@ -20,6 +23,8 @@ Meteor.startup(async () => {
 		});
 
 		await deployContract();
+
+		await createAllVotings();
 	}
 });
 
@@ -45,11 +50,15 @@ async function deployContract() {
 		const gasEstimate = await deployTx.estimateGas();
 		const gasPrice = await web3.eth.getGasPrice();
 
+		const gasEstimateMultiplier = await getMemoizedSetting(
+			'blockchain.gasEstimateMultiplier',
+			30
+		);
 		const signed = await web3.eth.accounts.signTransaction(
 			{
 				data: deployTx.encodeABI(),
 				from: signer.address,
-				gas: Math.round(gasEstimate * 1.2), // 20% buffer
+				gas: Math.round(gasEstimate * gasEstimateMultiplier),
 				gasPrice: gasPrice,
 			},
 			systemPk
@@ -76,4 +85,15 @@ async function deployContract() {
 		log.error(`deployContract(): error: ${errorMessage}`);
 		throw new Meteor.Error(`deployContract(): error: ${errorMessage}`);
 	}
+}
+
+async function createAllVotings() {
+	if (!C.app.isDev) throw new Error('createAllVotings(): not in dev mode');
+
+	// Checks are already done, we reset votes
+	findVotes({ status: C.votes.statuses.active }, { sort: { createdAt: 1 } }).forEachAsync(
+		async vote => {
+			await updateVoteStatus(vote._id, vote.userId, C.votes.statuses.draft);
+		}
+	);
 }

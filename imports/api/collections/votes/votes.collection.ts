@@ -15,7 +15,7 @@ export type Vote = {
 	options: string[];
 	voters: string[];
 	// Once launched on the blockchain
-	instanceId?: string;
+	instanceId?: number;
 	deadline?: number; // UNIX timestamp in seconds from smart contract
 	deadlineJSDate?: Date;
 	ownerAddress?: string;

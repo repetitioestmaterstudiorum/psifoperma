@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { getErrMsg } from '/imports/utils/error-utils';
 import { getMemoizedSetting } from '/imports/startup/server/settings/settings.model';
 import { decrypt, encrypt } from '/imports/startup/server/encryption/encryption';
+import _ from 'lodash';
 
 // ---
 
@@ -66,11 +67,35 @@ export async function createVoting(
 			.createVoting(voterAddresses, proposalTitles, durationInMinutes)
 			.estimateGas({ from: account.address });
 
+		const gasEstimateMultiplier = await getMemoizedSetting(
+			'blockchain.gasEstimateMultiplier',
+			30
+		);
 		const result = await contract.methods
 			.createVoting(voterAddresses, proposalTitles, durationInMinutes)
-			.send({ from: account.address, gas: Math.round(gasEstimate * 1.2) }); // 20% buffer
+			.send({
+				from: account.address,
+				gas: Math.round(gasEstimate * gasEstimateMultiplier),
+			});
 
-		const instanceId = result.events.RETcreateVoting.returnValues.instanceId;
+		if (C.app.isDev) {
+			// This is a hack to get the instanceId (and other values) in dev mode because ganache (and hardhat) don't emit events
+			const { instancesCount } = await getInstancesCount();
+			const instanceId = instancesCount - 1;
+			const transactionHash = result.transactionHash;
+			const deadline = Math.round(Date.now() / 1000) + durationInMinutes * 60;
+			const deadlineJSDate = new Date(deadline * 1000);
+			const ownerAddress = account.address;
+			log.info(
+				`createVoting(): instanceId: ${instanceId} created. transactionHash: ${transactionHash}, deadline: ${deadline}, deadlineJSDate: ${deadlineJSDate}, ownerAddress: ${ownerAddress}`
+			);
+			return { instanceId, deadline, deadlineJSDate, ownerAddress, transactionHash };
+		}
+
+		if (!result.events.RETcreateVoting) {
+			throw new Meteor.Error(`Voting deployment returned no events`);
+		}
+		const instanceId = _.toNumber(result.events.RETcreateVoting.returnValues.instanceId);
 		const deadline = result.events.RETcreateVoting.returnValues.deadline;
 		const deadlineJSDate = new Date(deadline * 1000);
 		const ownerAddress = result.events.RETcreateVoting.returnValues.ownerAddress;
@@ -108,9 +133,14 @@ export async function vote(instanceId: number, proposalId: number, voterAddress:
 			.vote(instanceId, proposalId, voterAddress)
 			.estimateGas({ from: account.address });
 
-		const result = await contract.methods
-			.vote(instanceId, proposalId, voterAddress)
-			.send({ from: account.address, gas: Math.round(gasEstimate * 1.2) }); // 20% buffer
+		const gasEstimateMultiplier = await getMemoizedSetting(
+			'blockchain.gasEstimateMultiplier',
+			30
+		);
+		const result = await contract.methods.vote(instanceId, proposalId, voterAddress).send({
+			from: account.address,
+			gas: Math.round(gasEstimate * gasEstimateMultiplier),
+		});
 
 		const transactionHash = result.transactionHash;
 		log.info(
@@ -218,7 +248,7 @@ export async function getInstancesCount() {
 
 		const result = await contract.methods.getInstancesCount().call();
 
-		const instancesCount = result;
+		const instancesCount = _.toNumber(result);
 		log.info(`getInstancesCount(): instancesCount: ${instancesCount}`);
 		return { instancesCount };
 	} catch (error) {

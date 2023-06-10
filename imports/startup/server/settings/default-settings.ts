@@ -12,10 +12,11 @@ const defaultSettings = {
 		sendInDev: false,
 	},
 	blockchain: {
+		gasEstimateMultiplier: 2,
 		// Values pertain to the dev. network, enter real settings into the db
 		systemPk:
 			'd6e92a072c25bc0872df2b726bfd4b14:e9f063d2e32d0c67e9fb4740da297211a9a87da989a0c71042ac809f1aa3ba62a0080397e18f2b053af13dd554dcfd294f9027ff18a4b23916afd70918838f60cf5e1c01ea3462782f40f6aabec59597',
-		contractAddress: '0xEcb3EAAe75313CaAA951294f43245885Aab79E89',
+		contractAddress: '0x319d67796470ca771f612ee6a65d44ea05e97649',
 		abi: [
 			{
 				anonymous: false,

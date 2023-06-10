@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { findVotes } from '/imports/api/collections/votes/votes.model';

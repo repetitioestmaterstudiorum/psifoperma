@@ -35,8 +35,8 @@ const serverConstants = {
 				error: log.error,
 			}),
 		},
-		ganachePort: 8545,
-		networkAddress: process.env.BLOCKCHAIN_NETWORK_ADDRESS || 'http://localhost:8545',
+		ganachePort: 9874,
+		networkAddress: process.env.BLOCKCHAIN_NETWORK_ADDRESS || 'http://localhost:9874',
 	},
 };
 

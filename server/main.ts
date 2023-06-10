@@ -1,7 +1,7 @@
 import '/imports/startup/server/publications';
 import '/imports/startup/server/accounts-config';
 import '/imports/startup/server/email-config';
-import '/imports/startup/server/ddp-config';
+import '/imports/startup/server/security/ddp-config';
 import '/imports/startup/server/fixtures';
 import '/imports/startup/methods';
 import '/imports/startup/server/blockchain/bc.devNetwork';

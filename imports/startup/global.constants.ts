@@ -26,7 +26,7 @@ const constants = {
 			draft: 'draft',
 			active: 'active',
 			completed: 'completed',
-		},
+		} as Record<string, string>,
 	},
 	blockchain: {
 		limits: {

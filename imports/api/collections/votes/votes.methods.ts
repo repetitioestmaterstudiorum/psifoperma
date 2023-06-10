@@ -11,6 +11,12 @@ Meteor.methods({
 		check(title, String);
 		const user = await requireUser();
 
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			title = sanitizer.sanitizeInput(title, 'votes.insert', user._id);
+		}
+
 		return await votes.addVote(user._id, title);
 	},
 
@@ -22,6 +28,12 @@ Meteor.methods({
 
 		check(voteId, String);
 		const user = await requireUser();
+
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.remove', user._id);
+		}
 
 		return await votes.deleteVote(voteId, user._id);
 	},
@@ -37,6 +49,13 @@ Meteor.methods({
 		check(description, String);
 		const user = await requireUser();
 
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.updateDescription', user._id);
+			description = sanitizer.sanitizeInput(description, 'votes.updateDescription', user._id);
+		}
+
 		return await votes.updateVoteDescription(voteId, user._id, description);
 	},
 
@@ -44,6 +63,13 @@ Meteor.methods({
 		check(voteId, String);
 		check(title, String);
 		const user = await requireUser();
+
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.updateTitle', user._id);
+			title = sanitizer.sanitizeInput(title, 'votes.updateTitle', user._id);
+		}
 
 		return await votes.updateVoteTitle(voteId, user._id, title);
 	},
@@ -59,6 +85,17 @@ Meteor.methods({
 		check(durationInMinutes, Number);
 		const user = await requireUser();
 
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.updateDurationInMinutes', user._id);
+			durationInMinutes = sanitizer.sanitizeInput(
+				durationInMinutes,
+				'votes.updateDurationInMinutes',
+				user._id
+			);
+		}
+
 		return await votes.updateVoteDurationInMinutes(voteId, user._id, durationInMinutes);
 	},
 
@@ -72,6 +109,13 @@ Meteor.methods({
 		check(voteId, String);
 		check(options, Array);
 		const user = await requireUser();
+
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.updateOptions', user._id);
+			options = sanitizer.sanitizeInput(options, 'votes.updateOptions', user._id);
+		}
 
 		return await votes.updateVoteOptions(voteId, user._id, options);
 	},
@@ -87,12 +131,25 @@ Meteor.methods({
 		check(voters, Array);
 		const user = await requireUser();
 
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.updateVoters', user._id);
+			voters = sanitizer.sanitizeInput(voters, 'votes.updateVoters', user._id);
+		}
+
 		return await votes.updateVoteVoters(voteId, user._id, voters);
 	},
 
 	'votes.launch': async function ({ voteId }: { voteId: string }) {
 		check(voteId, String);
 		const user = await requireUser();
+
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.launch', user._id);
+		}
 
 		return await votes.launchVote(voteId, user._id);
 	},
@@ -108,6 +165,13 @@ Meteor.methods({
 		check(optionIndex, String);
 		const user = await requireUser();
 
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.vote', user._id);
+			optionIndex = sanitizer.sanitizeInput(optionIndex, 'votes.vote', user._id);
+		}
+
 		return await votes.vote(voteId, user._id, optionIndex);
 	},
 
@@ -115,6 +179,13 @@ Meteor.methods({
 		check(voteId, String);
 		check(userId, String);
 		const user = await requireUser();
+
+		if (C.app.isServer) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const sanitizer = require('/imports/startup/server/security/client-input-validation.ts');
+			voteId = sanitizer.sanitizeInput(voteId, 'votes.getVoteState', user._id);
+			userId = sanitizer.sanitizeInput(userId, 'votes.getVoteState', user._id);
+		}
 
 		return await votes.getVoteState({ voteId, userId: user._id });
 	},
