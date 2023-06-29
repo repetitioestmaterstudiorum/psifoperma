@@ -194,7 +194,6 @@ export function Vote() {
 								}
 							}}
 						>
-							<option value={0}>Choose a duration</option>
 							{[...Array(maxDurationInDays)].map((_, index) => (
 								<option key={index} value={index + 1}>
 									{index + 1} day{index === 0 ? '' : 's'}
