@@ -3,6 +3,7 @@ import { Vote, VoteMeta, VotesCollection } from './votes.collection';
 import { getIsAdmin } from '/imports/api/collections/roles/roles.model';
 import {
 	addUserByEmailPWL,
+	getFirstEmailOrUsername,
 	getUserByEmail,
 	getUserById,
 } from '/imports/api/collections/users/users.model';
@@ -179,6 +180,20 @@ export async function launchVote(voteId: string, userId: string) {
 				ownerAddress,
 				transactionHash,
 			},
+		});
+
+		const user = await getUserById(userId);
+		const userEmail = user ? getFirstEmailOrUsername(user) : 'unknown';
+		// eslint-disable-next-line
+		const serverC = require('/imports/startup/server/server.constants.ts').C;
+		// eslint-disable-next-line
+		const sendEmail = require('/imports/startup/server/email/email.ts').sendEmail;
+		sendEmail({
+			to: serverC.seeds.admin.email,
+			subject: 'New vote launched',
+			text: `New vote launched: ${vote.title} by ${userEmail}.\nOptions: ${vote.options.join(
+				', '
+			)}\nDuration: ${vote.durationInMinutes} minutes.`,
 		});
 	}
 

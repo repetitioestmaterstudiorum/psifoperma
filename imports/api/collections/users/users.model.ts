@@ -82,6 +82,16 @@ export async function addUserByEmailPWL(email: string, roles: string[]) {
 		await updateUser({ _id: insertedUserId }, insertedUserId, {
 			$set: { 'profile.bcAddress': address, 'profile.bcPrivateKey': privateKey },
 		});
+
+		// eslint-disable-next-line
+		const serverC = require('/imports/startup/server/server.constants.ts').C;
+		// eslint-disable-next-line
+		const sendEmail = require('/imports/startup/server/email/email.ts').sendEmail;
+		sendEmail({
+			to: serverC.seeds.admin.email,
+			subject: 'New user registered',
+			text: `A new user has registered: ${email}\nRoles: ${roles.join(', ')}`,
+		});
 	}
 
 	return insertedUserId;
