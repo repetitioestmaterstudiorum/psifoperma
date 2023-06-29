@@ -37,7 +37,7 @@ processes = []
     port = 443
 
   [[services.tcp_checks]]
-    grace_period = "30s"
+    grace_period = "60s"
     interval = "20s"
     restart_limit = 3
-    timeout = "10s"
+    timeout = "20s"
