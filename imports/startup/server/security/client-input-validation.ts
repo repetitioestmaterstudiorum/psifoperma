@@ -3,7 +3,31 @@ import { check, Match } from 'meteor/check';
 import validator from 'validator';
 import { log } from '/imports/utils/logger';
 
-// Helper function to sanitize a string
+// ---
+
+export function sanitizeInput<T>(data: T, functionName: string, userId = 'unknown'): T {
+	if (typeof data === 'string') {
+		return sanitizeString(data as unknown as string, functionName, userId) as unknown as T;
+	} else if (Array.isArray(data)) {
+		return (data as unknown[]).map(element =>
+			sanitizeInput(element, functionName, userId)
+		) as unknown as T;
+	} else if (typeof data === 'object' && data !== null) {
+		return sanitizeObject(data as Record<string, unknown>, functionName, userId) as T;
+	} else if (typeof data === 'number') {
+		// If the data is a number, return it as is
+		return data;
+	} else {
+		log.error(`Dangerous input detected in ${functionName} by user ${userId}.`);
+		throw new Meteor.Error(
+			'invalid-data',
+			'Data must be a string, an object, or an array of strings or objects'
+		);
+	}
+}
+
+// Helper functions
+
 function sanitizeString(data: string, functionName: string, userId = 'unknown'): string {
 	check(data, String);
 
@@ -31,7 +55,6 @@ function sanitizeString(data: string, functionName: string, userId = 'unknown'):
 	return sanitized;
 }
 
-// Helper function to sanitize an object
 function sanitizeObject<T extends Record<string, unknown>>(
 	data: T,
 	functionName: string,
@@ -46,26 +69,4 @@ function sanitizeObject<T extends Record<string, unknown>>(
 	}
 
 	return sanitizedData;
-}
-
-// Main function to sanitize any input
-export function sanitizeInput<T>(data: T, functionName: string, userId = 'unknown'): T {
-	if (typeof data === 'string') {
-		return sanitizeString(data as unknown as string, functionName, userId) as unknown as T;
-	} else if (Array.isArray(data)) {
-		return (data as unknown[]).map(element =>
-			sanitizeInput(element, functionName, userId)
-		) as unknown as T;
-	} else if (typeof data === 'object' && data !== null) {
-		return sanitizeObject(data as Record<string, unknown>, functionName, userId) as T;
-	} else if (typeof data === 'number') {
-		// If the data is a number, return it as is
-		return data;
-	} else {
-		log.error(`Dangerous input detected in ${functionName} by user ${userId}.`);
-		throw new Meteor.Error(
-			'invalid-data',
-			'Data must be a string, an object, or an array of strings or objects'
-		);
-	}
 }
