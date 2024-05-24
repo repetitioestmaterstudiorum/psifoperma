@@ -46,7 +46,6 @@ https://blockchainworkbench.com/
 
 -   Git clone the project
 -   Install MeteorJS: https://docs.meteor.com/install.html
--   `nvm use` or ensure you're using the node version in `.nvmrc`
 -   `meteor npm i`
 -   `npm run dev`
 
